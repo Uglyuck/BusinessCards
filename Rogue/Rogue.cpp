@@ -1,331 +1,39 @@
 #include<windows.h>//  -- Rogue Like --
-#include<iostream> //           v0.1
-#include<iomanip>  //  By: Michael Pelz
-//#include <string>
-
-#define KeyPressed(o) !(!(GetKeyState((o)) & 0x0100))
-#define printCharacter(o,p)SetConsoleCursorPosition(GetStdHandle(-11),(o));std::wcout<<(p)
-
-//Coordinates that are used for objects.
-struct Vector :COORD
-{
-	Vector() {}Vector(short x, short y)
-	{
-		X = x; Y = y;
-	}
-	bool operator==(COORD& o)
-	{
-		return o.X == X && o.Y == Y;
-	}
-};
-
-std::wstring charPlayer, charE1, charE2, charEUV, charPortal, charKey, charGoal, charKeyUV, charGoalUV, charWall, charBlank, map, charTemp;
-short SBoardWidth, SBoardHeight, SLevel, Stemp1, STime;
-Vector VGoal, VPlayer, VKey, VPortal1, VPortal2, VEnemies[99], VTemp;
-
-//Checks and tries to find a valid random location, and puts it in the passed Vector.
-void SetRandomLocation(Vector* v)
-{
-	short x = 1, y = 1, loc;
-	while (x > -1)
-	{
-		x = rand() % ((SBoardWidth - 3) / 2) * 2 + 1;
-		y = rand() % ((SBoardHeight - 3) / 2) * 2 + 1;
-		loc = y * SBoardWidth + SBoardWidth + x;
-		if (map.substr(loc - 1, 3).find(charWall[0]) && (x > 6 || y > 6)) //L'\xB2'))
-		{
-			map[loc] = charBlank[0];
-			*v = { x, y + 1 };
-			x = -2;
-		}
-	}
-}
-// Spawns all the characters... used for reading the new level function.
-void SpawnEverything()
-{
-	SetRandomLocation(&VGoal);
-	SetRandomLocation(&VKey);
-
-	Stemp1 = SLevel;
-	while (--Stemp1)
-	{
-		SetRandomLocation(&VEnemies[Stemp1]);
-	}
-}
-
-//creates a random map. Top and bottom rows are clear for moving around.
-//avoids blocking a full row.
-void SetupMap()
-{
-	short FullRowCounter, CountCopyRows, Sections = 3, CountDynamicRows = SBoardHeight - 4, x = SBoardWidth;
-	std::wstring RowBorder, RowBuilt, SectionWall, SectionBlank, RowClean;
-
-	short sx = (SBoardWidth - 2) / Sections;
-
-	while (x--)
-		RowBorder += charWall;
-	x = sx;
-
-	while (x--)
-		SectionWall += charWall;
-	x = sx;
-	while (x--)
-		SectionBlank += charBlank;
-	RowClean = charWall;
-	x = SBoardWidth - 2;
-	while (x--)
-		RowClean += charBlank;
-	RowClean += charWall;
-
-	map = L"";
-	map += RowBorder;
-	map += RowClean;
-
-	while (CountDynamicRows--)
-	{
-
-		sx = Sections;
-		FullRowCounter = Sections - 2;
-		CountCopyRows = rand() % 3 + 2;
-
-		RowBuilt = charWall;
-		while (sx--)
-		{
-			if (sx == Sections - 1 && CountDynamicRows > SBoardHeight - 6)
-			{
-				RowBuilt += SectionBlank;
-			}
-			else
-			{
-				if (rand() % 5 == 0)
-				{
-					RowBuilt += SectionWall;
-					--FullRowCounter;
-				}
-				else
-				{
-					RowBuilt += SectionBlank;
-					FullRowCounter = Sections - 2;
-				}
-			}
-			if (FullRowCounter < 0 && sx > 0)
-			{
-				RowBuilt += SectionBlank;
-				sx--;
-			}
-		}
-		RowBuilt += charWall;
-		while (--CountCopyRows && CountDynamicRows)
-		{
-			map += RowBuilt;
-			CountDynamicRows--;
-		}
-		map += RowBuilt;
-	}
-	map += RowClean;
-	map += RowBorder;
-}
-
-void printBoard()
-{
-	//initialize these in here to hopefully create it on the CPU Cache.
-	short u = SBoardHeight;
-	Vector t;
-	while (u--)
-	{
-		t = { 0, u };
-		printCharacter(t, map.substr(SBoardWidth * u, SBoardWidth));
-	}
-}
-
-void NextStage()
-{
-	SLevel++;
-	VPlayer = { 3,3 };
-	//Key active = true
-	charKeyUV = charKey;
-	//Goal active = false
-	charGoalUV = charBlank;
-	SetupMap();
-	SpawnEverything();
-	printBoard();
-}
-
-
-void Move(Vector* v, short x, short y)
-{
-	// Remove print of character.
-	printCharacter(*v, charBlank); //Ensures no trail left by the object.
-	Vector n = { v->X + x, v->Y + y };
-	wchar_t land = map[n.X + n.Y * SBoardWidth];
-
-	if (land != charWall[0])
-	{
-		*v = n;
-	}
-}
-
-void PlayerKeyCollisions()
-{
-	//Little overhead, no need to really create objects and check if they are active or not. SReady is the only condition I care about.
-	if (VPlayer == VGoal && charGoalUV == charGoal)
-		NextStage();
-	if (VPlayer == VKey)
-	{
-		charKeyUV = charBlank;
-		charGoalUV = charGoal;
-	}
-	if (VPlayer == VPortal1)
-	{
-		VPlayer = VPortal2;
-		VPlayer.X--;
-	}
-	if (VPlayer == VPortal2)
-	{
-		VPlayer = VPortal1;
-		VPlayer.X++;
-	}
-}
-
-void printInfo()
-{
-	VTemp = { SBoardWidth + 5, 5 };
-	printCharacter(VTemp, "Level:");
-	VTemp = { SBoardWidth + 13, 5 };
-	printCharacter(VTemp, SLevel);
-	VTemp = { SBoardWidth + 5, 15 };
-	printCharacter(VTemp, "DUCK");
-}
-bool isPlayerHitEnemy()
-{
-	short r = SLevel;
-	while (--r)
-	{
-		if (VPlayer == VEnemies[r])
-			return 1;
-	}
-	return 0;
-}
-
-//Done for animation
-void printEnemies()
-{
-	charEUV = charE1;
-	if (STime % 10 > 5)
-	{
-		charEUV = charE2;
-	}
-	Stemp1 = SLevel;
-	while (--Stemp1)
-	{
-		printCharacter(VEnemies[Stemp1], charEUV);
-	}
-}
-/*
-wchar_t renderEnemyUV(short *time)
-{
-	if (*time % 10 > 5)
-		return charE2[0];
-	return charE1[0];
-}
-
-void printAll(short *time)
-{
-	//Screen refresh takes too long... And streaming it requires a fixed window. and I don't want to lose everyone.
-	std::wstring NewMap = map;
-
-	//initialize these in here to hopefully create it on the CPU Cache.
-	NewMap[SBoardWidth * VKey.Y + VKey.X ] = charKeyUV[0];
-	NewMap[SBoardWidth * VGoal.Y + VGoal.X] = charGoalUV[0];
-	NewMap[SBoardWidth * VPlayer.Y + VPlayer.X] = charPlayer[0];
-	NewMap[SBoardWidth * VPortal1.Y + VPortal1.X] = charPortal[0];
-	NewMap[SBoardWidth * VPortal2.Y + VPortal2.X] = charPortal[0];
-
-	wchar_t e = renderEnemyUV(time);
-	short r = SLevel;
-	while (--r)
-	{
-		NewMap[SBoardWidth * VEnemies[r].Y + VEnemies[r].X] = e;
-	}
-
-	short u = SBoardHeight;
-	Vector t;
-	while (u--)
-	{
-		t = { 0, u };
-		printCharacter(t, NewMap.substr(SBoardWidth * u, SBoardWidth));
-	}
-}
-*/
-
-int main()
-{
-	charPlayer = L'\x81';
-	charE1 = '\x4F';
-	charE2 = '\x6F';
-	charKey = '$';
-	charGoal = L'\xDB';
-	charWall = L'\xB2';
-	charBlank = L"\xB0";
-	charPortal = L'\xEA';
-	VPortal1 = { 1,1 };
-
-	SBoardWidth = 32;
-	SBoardHeight = 30;
-	VPortal2 = { SBoardWidth - 2, SBoardHeight - 2 };
-
-	srand(int(time(0)));
-	short dirX;
-	short dirY;
-	STime = 0;
-	Vector t;
-
-	while (!KeyPressed(VK_ESCAPE))
-	{
-		VTemp = { SBoardWidth + 3, 2 };
-		printCharacter(VTemp, "GAUNTLET ");
-		SLevel = 0;
-		NextStage();
-		while (!KeyPressed(VK_ESCAPE) && !isPlayerHitEnemy())
-		{
-
-			STime++;
-			if (STime > 21)
-			{
-				Stemp1 = SLevel;
-				while (--Stemp1)
-				{
-					Move(&VEnemies[Stemp1], (rand() % 3 - 1), (rand() % 3 - 1));
-				}
-				STime = 0;
-			}
-			dirX = KeyPressed(39) - KeyPressed(37); // - (!KeyPressed(38))); //38 right
-			dirY = KeyPressed(40) - KeyPressed(38);
-
-
-			printInfo();
-			Move(&VPlayer, dirX, dirY);
-			PlayerKeyCollisions();
-			printCharacter(VKey, charKeyUV);
-			printCharacter(VGoal, charGoalUV);
-			printCharacter(VPortal1, charPortal);
-			printCharacter(VPortal2, charPortal);
-
-			printCharacter(VPlayer, charPlayer);
-
-			printEnemies();
-
-			printInfo();
-			Sleep(32);
-		}
-
-		VTemp = { SBoardWidth + 3, 2 };
-		printCharacter(VTemp, "Game Over");
-
-		while (!KeyPressed(VK_RETURN) && !KeyPressed(VK_ESCAPE))
-		{
-			Sleep(32);
-		}
-
-	}
-}
+#include<iostream> //  By: Michael Pelz
+#define R(o) !(!(GetKeyState((o))&256))
+#define O SetConsoleCursorPosition
+#define G GetStdHandle(-11)
+#define U(o,p) O(G,(o));std::wcout<<(p)
+#define E(o,x) x=(o);while (x--)
+struct V:COORD{V(){}V(int x,int y){X=x;Y=
+y;}bool operator==(COORD& o){return o.X==
+X&&o.Y==Y;}};std::wstring a,b,c,d,f,h,i,j
+,k,l,n,m,p,q,s,t,v;int r,o,g,u,e,z,w,x,y;
+V GA,UN,T,L,ET,Z[99],A;void B(V*v){x=1;y=
+1;while(x>0){x=rand()%11*2+7;y=rand()%10*
+2+7;z=y*r+r+x;if(m[z]!=l[0]){*v={x,y+1};x
+=0;}}}void N(){g++;T={3,3};j=h;k=n;m=p+v;
+E(26,z){w=1;y=rand()%3+2;q=l;E(3,x){if(x
+==2&&z>24)q+=t;else{if(rand()%5==0){q+=s;
+--w;}else{q+=t;w=1;}}if(w<0&&x>0){q+=t;x
+--;}}q+=l;while(--y&&z){m+=q;z--;}m+=q;}m
++=v;m+=p;B(&GA);B(&UN);E(g-1,u){B(&Z[u]);
+}E(o,u){A={0,u};U(A,m.substr(r*u,r));}}
+void M(V*z,V d){U(*z,n);A={z->X+d.X,z->Y+
+d.Y};if(m[A.X+A.Y*r]!=l[0]){*z=A;}}bool C
+(){E(g,u){if(T==Z[u])return 1;}return 0;}
+int main(){c='o';h=36;b=79;i=219;l=178;n=
+176;f=234;a=129;L={1,1};r=32;o=30;ET={30,
+28};e=0;srand(1);z=10;E(r,u)p+=l;E(z,u)s
++=l;E(z,u)t+=n;v=l;E(30,u)v+=n;v+=l;while
+(!R(27)){A={37,2};g=0;U(A,"GAUNTLET ");N(
+);while(!R(27)&&!C()){e++;if(e>21){E(g-1,
+u){M(&Z[u],{rand()%3-1,rand()%3-1});}e=0;
+}A={37,5};U(A,"Level:");M(&T,{R(39)-R(37)
+,R(40)-R(38)});if(T==GA&&k==i)N();if(T==
+UN){j=n;k=i;}if(T==L){T=ET;T.X--;}if(T==
+ET){T=L;T.X++;}U(UN,j);U(GA,k);U(L,f);U(
+ET,f);U(T,a);d=b;if(e%10>5){d=c;}E(g-1,u)
+{U(Z[u],d);}A={45,5};U(A,g);A={37,15};U(A
+,"DUCK");Sleep(32);}A={37,2};U(A,"GameOver"
+);while(!R(13)&&!R(27)){Sleep(32);}}}
