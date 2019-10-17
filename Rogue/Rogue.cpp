@@ -26,14 +26,14 @@ int main(){c='o';h=36;b=79;i=219;l=178;n=
 176;f=234;a=129;L={1,1};r=32;o=30;ET={30,
 28};e=0;srand(1);z=10;E(r,u)p+=l;E(z,u)s
 +=l;E(z,u)t+=n;v=l;E(30,u)v+=n;v+=l;while
-(!R(27)){A={37,2};g=0;U(A,"GAUNTLET ");N(
-);while(!R(27)&&!C()){e++;if(e>21){E(g-1,
-u){M(&Z[u],{rand()%3-1,rand()%3-1});}e=0;
-}A={37,5};U(A,"Level:");M(&T,{R(39)-R(37)
-,R(40)-R(38)});if(T==GA&&k==i)N();if(T==
-UN){j=n;k=i;}if(T==L){T=ET;T.X--;}if(T==
-ET){T=L;T.X++;}U(UN,j);U(GA,k);U(L,f);U(
-ET,f);U(T,a);d=b;if(e%10>5){d=c;}E(g-1,u)
-{U(Z[u],d);}A={45,5};U(A,g);A={37,15};U(A
-,"DUCK");Sleep(32);}A={37,2};U(A,"GameOver"
-);while(!R(13)&&!R(27)){Sleep(32);}}}
+(!R(27)){A={37,2};g=0;U(A,"GAUNTLET");N()
+;while(!R(27)&&!C()){e++;if(e>21){E(g-1,u
+){M(&Z[u],{rand()%3-1,rand()%3-1});}e=0;}
+A={37,5};U(A,"Level:");if(e%2)M(&T,{R(39)
+-R(37),R(40)-R(38)});if(T==GA&&k==i)N();
+if(T==UN){j=n;k=i;}if(T==L){T=ET;T.X--;}
+if(T==ET){T=L;T.X++;}U(UN,j);U(GA,k);U(L,
+f);U(ET,f);U(T,a);d=b;if(e%10>5){d=c;}E(g
+-1,u){U(Z[u],d);}A={45,5};U(A,g);Sleep(32
+);}A={37,2};U(A,"GameOver");while(!R(13)
+&&!R(27)){Sleep(32);}}}
