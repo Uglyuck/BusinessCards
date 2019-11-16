@@ -1,29 +1,245 @@
 </pre><HTML>
 <Body>
-<center>
-<div align=center style='width:50%'>
-</br></br>
-~~~~~~~~~~~~~~~~</br>
-<H1>Rogue-like Game</H1> 
-~~~~~~~~~~~~~~~~</br>
-<form width=100>
-<button>
-<A href="https://raw.githubusercontent.com/Uglyuck/BusinessCards/master/Rogue/Rogue.cpp">See Code</a>
-</button>
-<button>
-<A href="https://github.com/Uglyuck/BusinessCards/tree/master/Rogue">github</a>
-</button>
-<button>
-<A href="https://github.com/Uglyuck/BusinessCards/raw/master/Rogue/Rogue.exe">Download exe File</a>
-</button>
+<style>
+/* CSS Document */
 
-</form>
-</br></br>
-<align=left>
-<div style=block><table><tr><th><img src="https://github.com/Uglyuck/BusinessCards/blob/master/Rogue/img/img2.JPG?raw=true"></img></th>
-<th>
-<img src="https://github.com/Uglyuck/BusinessCards/blob/master/Rogue/img/img1.JPG?raw=true" align=center></img></th></tr></table>
+@charset "utf-8";
+body {
+	font: 100%/1.4 Verdana, Arial, Helvetica, sans-serif;
+	margin: 0;
+	float: none;
+	padding-left: 5%;
+	padding-right: 5%;
+	background-color: #010;
+}
+
+/* ~~ Element/tag selectors ~~ */
+ol, dl { /* Due to variations between browsers, it's best practices to zero padding and margin on lists. For consistency, you can either specify the amounts you want here, or on the list items (LI, DT, DD) they contain. Remember that what you do here will cascade to the .nav list unless you write a more specific selector. */
+	padding: 0;
+	margin: 0;
+	list-style-type: none;
+}
+h1 {
+	text-align: center;
+	padding-top: 50px;
+	padding-bottom: 20px;
+	color: #096;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+h2 {
+	padding-bottom: 20px;
+	color: #096;
+	font-size: 16pt;
+	
+}
+h3 {
+	padding-bottom: 20px;
+	font-size: 16pt;
+	text-align: center;
+	
+}
+h9 {
+	padding-bottom: 0px;
+	color: #096;
+	font-size: 16pt;
+    font-weight: bold;
+    display: block;
+}
+
+a img { /* this selector removes the default blue border displayed in some browsers around an image when it is surrounded by a link */
+	border: none;
+}
+
+/* ~~ Styling for your site's links must remain in this order - including the group of selectors that create the hover effect. ~~ */
+a:link {
+	color:#F60;
+	text-decoration: none;  /*unless you style your links to look extremely unique, it's best to provide underlines for quick visual identification */
+}
+
+a:visited {
+	color: #F60; /* #06F #4E5869;*/
+	/*text-decoration: underline; */
+}
+/*
+a:hover, a:active, a:focus { 
+	text-decoration: underline;
+}*/
+
+/* ~~ this container surrounds all other divs giving them their percentage-based width ~~ */
+.container {
+	width: 80%;
+	max-width: 1260px;/* a max-width may be desirable to keep this layout from getting too wide on a large monitor. This keeps line length more readable. IE6 does not respect this declaration. */
+	min-width: 780px;/* a min-width may be desirable to keep this layout from getting too narrow. This keeps line length more readable in the side columns. IE6 does not respect this declaration. */
+	background: #FFF;
+	margin: 0 auto; /* the auto value on the sides, coupled with the width, centers the layout. It is not needed if you set the .container's width to 100%. */
+}
+
+/* ~~ the header is not given a width. It will extend the full width of your layout. It contains an image placeholder that should be replaced with your own linked logo ~~ */
+.header {
+	float: none;
+	text-align: right;
+}
+
+.topBar {
+	float: left;
+	width: 100%;
+	background: #93A5C4;
+	padding-bottom: 10px;
+}
+.content {
+	width: auto;
+	float: none;
+}
+
+
+/* ~~ This grouped selector gives the lists in the .content area space ~~ */
+.content ul, .content ol { 
+	padding: 0 15px 15px 40px; /* this padding mirrors the right padding in the headings and paragraph rule above. Padding was placed on the bottom for space between other elements on the lists and on the left to create the indention. These may be adjusted as you wish. */
+}
+
+
+
+.block {
+  display: block;
+  width: 100%;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+
+a.block {
+  display: inline-block;
+  width: auto;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 28px;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+
+a.block:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.nav {
+	display: inline-block;
+	width: 100%;
+	float: left;
+	list-style-type: none;
+	padding-bottom: 50px;
+height: 40px;
+	list-style-image: none;
+}
+.nav li {
+	float: left;
+	font-size: 18px;
+	width: auto;
+	color: #990;
+	 display:inline-block;
+}
+.nav a {
+	float: left;
+	font-size: 16px;
+	width: 100px;
+	color: #990;
+}
+.nav a:hover {
+	color: #FF0;
+	font-size: 18px;
+}
+
+
+.nav li:hover {
+	color: #FF0;
+	font-size: 24px;
+}
+.nav ul {
+	font-size: 16px;
+	color: #FF0;
+	padding-bottom: 0px;
+	text-align: center;
+	background-color:  #033;
+
+
+}
+
+
+/* ~~The footer ~~ */
+.footer {
+	padding: 10px 0;
+	position: fixed;/* this gives IE6 hasLayout to properly clear */
+	clear: both; /* this clear property forces the .container to understand where the columns end and contain them */
+	background-color: #0CF;
+}
+
+/* ~~miscellaneous float/clear classes~~ */
+.fltrt {  
+	float: right;
+	margin-left: 8px;
+}
+.fltlft { 
+	float: left;
+	margin-right: 8px;
+}
+.clearfloat { 
+	clear:both;
+	height:0;
+	font-size: 1px;
+	line-height: 0px;
+}
+.Content_Body {
+	/*position: fixed;*/
+	bottom: 0;
+	/*height: 100%;*/
+	padding: 0;
+	min-height: 80%;
+	/*	background-color: #010;*/
+	color: #AA0;
+	padding-left: 20px;
+	background-color:  #012;
+	padding-right: 20px;
+	font-size: 10%;
+}
+.Content_Body p {
+	font-size: 10pt;
+}
+.Content_Body {
+	font-size: 10pt;
+}
+
+</style>
+
+<center>
+
+</br>
+<H1>~~~~~~~~~~~~~~~~</br>
+Rogue-like Game<br>
+~~~~~~~~~~~~~~~~</br>
+</H1> 
+
+<div class="block">
+<A class="block" href="https://raw.githubusercontent.com/Uglyuck/BusinessCards/master/Rogue/Rogue.cpp">See Code</a>
+<A class="block" href="https://github.com/Uglyuck/BusinessCards/tree/master/Rogue">github</a>
+<A class="block" href="https://github.com/Uglyuck/BusinessCards/raw/master/Rogue/Rogue.exe">EXE File</a>
 </div>
+
+<div align=center class="Content_Body">
+<div style=inline-block margin-left=auto margin-right=auto align=center>
+<img src="https://github.com/Uglyuck/BusinessCards/blob/master/Rogue/img/img2.JPG?raw=true"></img></th>
+<img src="https://github.com/Uglyuck/BusinessCards/blob/master/Rogue/img/img1.JPG?raw=true" align=center></img></th></tr></table>
+<br>
+</div>
+
+</br></br>
+<div align=left>
+
 </br>
 </br>
 </br>
@@ -31,8 +247,10 @@
 Dynamic levels with logic built in to keep impossible routes from happening. This code was built to fit on the back of a business card and natively compile in C++ on any machine.
 </br>
 </br></br>
+<center>
 <img src="https://github.com/Uglyuck/BusinessCards/blob/master/Rogue/img/img3.JPG?raw=true"></img>
-<div align=left>
+</center>
+<div align=left style="Content_Body">
 </br>
 Instead of going with the 40x35 template I make this a little larger at 42x39 or 1638 bytes giving myself 238 more bytes to ensure the logic wouldn't create an impossible level, to allow enemy animation, and to ensure whoever plays it 
 will be able to see the same image and not adjust any console defaults. 
@@ -49,10 +267,12 @@ This is part of a small trend that is slowly moving by some wonderful and highly
 <br>
 <br>
 </br></br></br> 
-<div>
+</div>
+<div style="Content_Body">
 <hr>
 <h2>About the game:</h2>
-<left><div align=left>
+<left>
+<div align=left style="Content_Body">
 <br><br>
 Story:
 <br>
@@ -89,18 +309,17 @@ Controls:</br>
 </left></div>
 </br>
 <p>
-<hr>
-<form width=100>
-<button>
-<A href="https://raw.githubusercontent.com/Uglyuck/BusinessCards/master/Rogue/Rogue.cpp">See Code</a>
-</button>
-<button>
-<A href="https://github.com/Uglyuck/BusinessCards/tree/master/Rogue">github</a>
-</button>
-<button>
-<A href="https://github.com/Uglyuck/BusinessCards/raw/master/Rogue/Rogue.exe">Download exe File</a>
-</button>
-</form></div></center>
+</div>
+</div>
+</div>
+
+<div class="block">
+<A class="block" href="https://raw.githubusercontent.com/Uglyuck/BusinessCards/master/Rogue/Rogue.cpp">See Code</a>
+<A class="block" href="https://github.com/Uglyuck/BusinessCards/tree/master/Rogue">github</a>
+<A class="block" href="https://github.com/Uglyuck/BusinessCards/raw/master/Rogue/Rogue.exe">EXE File</a>
+</div>
+
+</center>
 </br>
 </br>
 </br>
